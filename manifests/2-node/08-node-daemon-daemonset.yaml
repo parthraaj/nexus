@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nexus-node-daemon
+  namespace: nexus-system
+  labels:
+    app: nexus-node-daemon
+spec:
+  selector:
+    matchLabels:
+      app: nexus-node-daemon
+  template:
+    metadata:
+      labels:
+        app: nexus-node-daemon
+    spec:
+      serviceAccountName: nexus-node-daemon
+      hostPID: true
+      hostNetwork: true
+      hostIPC: true
+      containers:
+      - name: node-daemon
+        image: docker.io/parthrajghatge/nexus-node-daemon:v0.1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090
+          name: http
+        env:
+        - name: LISTEN_ADDR
+          value: "0.0.0.0:9090"
+        securityContext:
+          privileged: true
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 9090
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 9090
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi

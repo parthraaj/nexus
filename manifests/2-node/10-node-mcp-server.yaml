@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-node-mcp-server
+  namespace: nexus-system
+  labels:
+    app: nexus-node-mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-node-mcp-server
+  template:
+    metadata:
+      labels:
+        app: nexus-node-mcp-server
+    spec:
+      serviceAccountName: nexus-node-mcp-server
+      containers:
+      - name: node-mcp-server
+        image: docker.io/parthrajghatge/nexus-node-mcp-server:v0.1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: LISTEN_ADDR
+          value: "0.0.0.0:8080"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-node-mcp-server
+  namespace: nexus-system
+spec:
+  selector:
+    app: nexus-node-mcp-server
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http

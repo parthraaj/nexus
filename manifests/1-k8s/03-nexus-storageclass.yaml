@@ -1,0 +1,18 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nexus-ibm-block
+provisioner: block.csi.ibm.com
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+parameters:
+  csi.storage.k8s.io/provisioner-secret-name: nexus-ibm-block-secret
+  csi.storage.k8s.io/provisioner-secret-namespace: nexus-system
+  csi.storage.k8s.io/controller-publish-secret-name: nexus-ibm-block-secret
+  csi.storage.k8s.io/controller-publish-secret-namespace: nexus-system
+  csi.storage.k8s.io/node-stage-secret-name: nexus-ibm-block-secret
+  csi.storage.k8s.io/node-stage-secret-namespace: nexus-system
+  csi.storage.k8s.io/fstype: ext4
+  pool: CSI_Parent_Pool
+  virt_snap_func: "false"

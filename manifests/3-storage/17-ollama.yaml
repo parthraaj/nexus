@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nexus-ollama
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc
+  namespace: nexus-ollama
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: nexus-ibm-block
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: nexus-ollama
+  labels:
+    app: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: docker.io/ollama/ollama:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 11434
+          name: http
+        resources:
+          requests:
+            cpu: 4000m
+            memory: 24Gi
+          limits:
+            cpu: 16000m
+            memory: 32Gi
+        volumeMounts:
+        - name: ollama-data
+          mountPath: /root/.ollama
+      volumes:
+      - name: ollama-data
+        persistentVolumeClaim:
+          claimName: ollama-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: nexus-ollama
+spec:
+  selector:
+    app: ollama
+  type: NodePort
+  ports:
+  - port: 11434
+    targetPort: 11434
+    nodePort: 31434
+    name: http

@@ -1,0 +1,10 @@
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: nexus-ollama-qwen32b
+  namespace: kagent
+spec:
+  model: qwen2.5:32b
+  provider: Ollama
+  ollama:
+    host: http://9.85.229.23:31434

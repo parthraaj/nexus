@@ -1,0 +1,53 @@
+apiVersion: kagent.dev/v1alpha2
+kind: RemoteMCPServer
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"kagent.dev/v1alpha2","kind":"RemoteMCPServer","metadata":{"annotations":{},"name":"nexus-node-mcp-server","namespace":"kagent"},"spec":{"description":"Nexus Node MCP Server — executes host-level storage commands (iSCSI, multipath, block devices) on OCP worker nodes via privileged DaemonSet","protocol":"STREAMABLE_HTTP","sseReadTimeout":"5m0s","terminateOnClose":true,"timeout":"30s","url":"http://nexus-node-mcp-server.nexus-system.svc.cluster.local:8080/mcp"}}
+  creationTimestamp: "2026-06-27T16:10:09Z"
+  generation: 1
+  name: nexus-node-mcp-server
+  namespace: kagent
+  resourceVersion: "22563578"
+  uid: 08ba36ef-a94e-49a8-bc6b-f35d2a0b23fa
+spec:
+  description: Nexus Node MCP Server — executes host-level storage commands (iSCSI,
+    multipath, block devices) on OCP worker nodes via privileged DaemonSet
+  protocol: STREAMABLE_HTTP
+  sseReadTimeout: 5m0s
+  terminateOnClose: true
+  timeout: 30s
+  url: http://nexus-node-mcp-server.nexus-system.svc.cluster.local:8080/mcp
+status:
+  conditions:
+  - lastTransitionTime: "2026-06-27T16:10:09Z"
+    message: Remote MCP server configuration accepted
+    observedGeneration: 1
+    reason: Reconciled
+    status: "True"
+    type: Accepted
+  discoveredTools:
+  - description: Get the node's own iSCSI initiator IQN from /etc/iscsi/initiatorname.iscsi.
+      This is the IQN that identifies THIS node to a storage array. Use THIS tool
+      (not node_get_iscsi_sessions, which returns the storage array's target IQNs)
+      when you need the node's identity to create a host object on IBM SVC.
+    name: node_get_iscsi_initiator_name
+  - description: List active iSCSI sessions on a specific OCP/K8s node. Returns target
+      IQN, portal IP, session state.
+    name: node_get_iscsi_sessions
+  - description: List all block devices on a specific node including filesystem type
+      and mount points.
+    name: node_get_lsblk
+  - description: Show multipath device topology on a specific node. Returns map name,
+      WWID, paths and their state (active/ghost/faulty).
+    name: node_get_multipath
+  - description: Login to an iSCSI target on a specific node. MUTATING — requires
+      approval. Creates a new iSCSI session.
+    name: node_iscsi_login
+  - description: Logout from an iSCSI target on a specific node. MUTATING — requires
+      approval. Removes the iSCSI session.
+    name: node_iscsi_logout
+  - description: Reconfigure multipathd on a specific node with current /etc/multipath.conf.
+      MUTATING — requires approval.
+    name: node_multipath_reconfigure
+  observedGeneration: 1

@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nexus-gemini-secret
+  namespace: kagent
+type: Opaque
+stringData:
+  GEMINI_API_KEY: "xxx"
+---
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: 1-gemini-3-1-flash-lite
+  namespace: kagent
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  model: gemini-3.1-flash-lite
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: 2-gemini-2-5-flash
+  namespace: kagent
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  model: gemini-2.5-flash
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: 3-gemini-2-5-flash-lite
+  namespace: kagent
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  model: gemini-2.5-flash-lite
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: 4-gemini-3-5-flash
+  namespace: kagent
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  model: gemini-3.5-flash
+  provider: Gemini
+  gemini: {}
+---
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  name: 5-gemini-2-0-flash
+  namespace: kagent
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  model: gemini-2.0-flash
+  provider: Gemini
+  gemini: {}

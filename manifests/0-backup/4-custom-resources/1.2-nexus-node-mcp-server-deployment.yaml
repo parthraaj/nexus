@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "3"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"nexus-node-mcp-server"},"name":"nexus-node-mcp-server","namespace":"nexus-system"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"nexus-node-mcp-server"}},"template":{"metadata":{"labels":{"app":"nexus-node-mcp-server"}},"spec":{"containers":[{"env":[{"name":"LISTEN_ADDR","value":"0.0.0.0:8080"}],"image":"docker.io/parthrajghatge/nexus-node-mcp-server:v0.1.1","imagePullPolicy":"Always","livenessProbe":{"httpGet":{"path":"/health","port":8080},"initialDelaySeconds":10,"periodSeconds":20},"name":"node-mcp-server","ports":[{"containerPort":8080,"name":"http"}],"readinessProbe":{"httpGet":{"path":"/health","port":8080},"initialDelaySeconds":5,"periodSeconds":10},"resources":{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}}],"serviceAccountName":"nexus-node-mcp-server"}}}}
+  creationTimestamp: "2026-06-27T15:58:39Z"
+  generation: 3
+  labels:
+    app: nexus-node-mcp-server
+  name: nexus-node-mcp-server
+  namespace: nexus-system
+  resourceVersion: "22563564"
+  uid: 3093bee9-eefb-408c-b19b-946b96bd9840
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nexus-node-mcp-server
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-06-27T12:07:56-04:00"
+      labels:
+        app: nexus-node-mcp-server
+    spec:
+      containers:
+      - env:
+        - name: LISTEN_ADDR
+          value: 0.0.0.0:8080
+        image: docker.io/parthrajghatge/nexus-node-mcp-server:v0.1.1
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: node-mcp-server
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: nexus-node-mcp-server
+      serviceAccountName: nexus-node-mcp-server
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-06-27T16:08:13Z"
+    lastUpdateTime: "2026-06-27T16:08:13Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-06-27T15:58:39Z"
+    lastUpdateTime: "2026-06-30T08:20:41Z"
+    message: ReplicaSet "nexus-node-mcp-server-7c7d9f57d7" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 3
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"DaemonSet","metadata":{"annotations":{},"labels":{"app":"nexus-node-daemon"},"name":"nexus-node-daemon","namespace":"nexus-system"},"spec":{"selector":{"matchLabels":{"app":"nexus-node-daemon"}},"template":{"metadata":{"labels":{"app":"nexus-node-daemon"}},"spec":{"containers":[{"env":[{"name":"LISTEN_ADDR","value":"0.0.0.0:9090"}],"image":"docker.io/parthrajghatge/nexus-node-daemon:v0.1.1","imagePullPolicy":"Always","livenessProbe":{"httpGet":{"path":"/health","port":9090},"initialDelaySeconds":10,"periodSeconds":20},"name":"node-daemon","ports":[{"containerPort":9090,"name":"http"}],"readinessProbe":{"httpGet":{"path":"/health","port":9090},"initialDelaySeconds":5,"periodSeconds":10},"resources":{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}},"securityContext":{"privileged":true}}],"hostIPC":true,"hostNetwork":true,"hostPID":true,"serviceAccountName":"nexus-node-daemon"}}}}
+  creationTimestamp: "2026-06-27T15:57:51Z"
+  generation: 2
+  labels:
+    app: nexus-node-daemon
+  name: nexus-node-daemon
+  namespace: nexus-system
+  resourceVersion: "22563736"
+  uid: 4e77012b-2a87-400d-8781-3414e65932cf
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nexus-node-daemon
+  template:
+    metadata:
+      labels:
+        app: nexus-node-daemon
+    spec:
+      containers:
+      - env:
+        - name: LISTEN_ADDR
+          value: 0.0.0.0:9090
+        image: docker.io/parthrajghatge/nexus-node-daemon:v0.1.1
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 9090
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: node-daemon
+        ports:
+        - containerPort: 9090
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 9090
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: nexus-node-daemon
+      serviceAccountName: nexus-node-daemon
+      terminationGracePeriodSeconds: 30
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 3
+  desiredNumberScheduled: 3
+  numberAvailable: 3
+  numberMisscheduled: 0
+  numberReady: 3
+  observedGeneration: 2
+  updatedNumberScheduled: 3

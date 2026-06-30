@@ -1,0 +1,12 @@
+apiVersion: kagent.dev/v1alpha2
+kind: RemoteMCPServer
+metadata:
+  name: nexus-storage-mcp-server
+  namespace: kagent
+spec:
+  description: "Nexus Storage MCP Server: IBM SVC REST API operations including volume, host, pool management"
+  protocol: STREAMABLE_HTTP
+  url: http://nexus-storage-mcp-server.nexus-system.svc.cluster.local:8080/mcp
+  timeout: 30s
+  sseReadTimeout: 5m0s
+  terminateOnClose: true

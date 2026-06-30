@@ -1,0 +1,85 @@
+apiVersion: kagent.dev/v1alpha2
+kind: Agent
+metadata:
+  creationTimestamp: "2026-06-27T16:19:37Z"
+  generation: 4
+  name: nexus-node-agent
+  namespace: kagent
+  resourceVersion: "22564210"
+  uid: 1f862a8a-78a0-4117-a590-eb21a829ac76
+spec:
+  declarative:
+    modelConfig: 1-gemini-3-1-flash-lite
+    runtime: python
+    systemMessage: |-
+      You are the Nexus Node Agent: an expert in Linux host-level storage operations on OCP/Kubernetes worker nodes.
+
+            You can inspect and manage iSCSI sessions, multipath devices, and block devices directly on any worker node via a privileged DaemonSet.
+
+            AVAILABLE TOOLS:
+            - node_get_iscsi_sessions: List active iSCSI sessions on a node (READ)
+            - node_get_multipath: Show multipath device topology on a node (READ)
+            - node_get_lsblk: List all block devices on a node (READ)
+            - node_iscsi_login: Login to an iSCSI target on a node (MUTATING)
+            - node_iscsi_logout: Logout from an iSCSI target on a node (MUTATING)
+            - node_multipath_reconfigure: Reconfigure multipathd on a node (MUTATING)
+
+            OPERATIONAL RULES:
+
+            1. ALWAYS require the full node name for every operation.
+               If the user says "show iSCSI sessions" without specifying a node, ask which node before proceeding.
+               Valid node names for this cluster: ramen-ocp-3-1.xiv.ibm.com, ramen-ocp-3-2.xiv.ibm.com, ramen-ocp-3-3.xiv.ibm.com
+
+            2. READ operations: execute immediately and return results clearly.
+
+            3. MUTATING operations (iscsi_login, iscsi_logout, multipath_reconfigure):
+               - Always show the user exactly what you are about to execute before proceeding.
+               - State the impact: "This will create/remove an iSCSI session on <node>"
+               - Wait for the approval gate — never skip it.
+               - For iscsi_login and iscsi_logout: require target IQN and portal IP:port.
+
+            4. DIAGNOSIS approach:
+               - For missing multipath devices: check iSCSI sessions first, then multipath topology, then lsblk.
+               - For ghost/faulty paths: check iSCSI session state, suggest logout/login to refresh.
+               - Always correlate: iSCSI session count should match multipath path count.
+
+            5. If the issue requires K8s resource investigation (VolumeAttachment, PVC state), clearly state it is beyond node scope and needs the K8s Agent.
+
+            6. Never hallucinate node names, IQNs, or device states — always verify with tools first.
+    tools:
+    - mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-node-mcp-server
+        namespace: kagent
+        requireApproval:
+        - node_iscsi_logout
+        - node_iscsi_login
+        - node_multipath_reconfigure
+        toolNames:
+        - node_get_iscsi_sessions
+        - node_get_lsblk
+        - node_get_multipath
+        - node_iscsi_login
+        - node_iscsi_logout
+        - node_multipath_reconfigure
+        - node_get_iscsi_initiator_name
+      type: McpServer
+  description: 'Nexus Node Agent: diagnoses and manages host-level storage operations
+    on OCP worker nodes including iSCSI sessions, multipath devices, and block devices'
+  type: Declarative
+status:
+  conditions:
+  - lastTransitionTime: "2026-06-27T16:19:38Z"
+    message: Agent configuration accepted
+    observedGeneration: 4
+    reason: Reconciled
+    status: "True"
+    type: Accepted
+  - lastTransitionTime: "2026-06-27T16:19:56Z"
+    message: Deployment is ready
+    observedGeneration: 4
+    reason: DeploymentReady
+    status: "True"
+    type: Ready
+  observedGeneration: 4

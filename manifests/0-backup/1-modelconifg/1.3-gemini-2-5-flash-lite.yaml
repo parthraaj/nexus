@@ -1,0 +1,27 @@
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"kagent.dev/v1alpha2","kind":"ModelConfig","metadata":{"annotations":{},"name":"3-gemini-2-5-flash-lite","namespace":"kagent"},"spec":{"apiKeySecret":"nexus-gemini-secret","apiKeySecretKey":"GEMINI_API_KEY","gemini":{},"model":"gemini-2.5-flash-lite","provider":"Gemini"}}
+  creationTimestamp: "2026-06-28T09:21:21Z"
+  generation: 1
+  name: 3-gemini-2-5-flash-lite
+  namespace: kagent
+  resourceVersion: "21801129"
+  uid: c8a434aa-bce1-4356-9d6d-aa5f996845b0
+spec:
+  apiKeySecret: nexus-gemini-secret
+  apiKeySecretKey: GEMINI_API_KEY
+  gemini: {}
+  model: gemini-2.5-flash-lite
+  provider: Gemini
+status:
+  conditions:
+  - lastTransitionTime: "2026-06-28T09:21:22Z"
+    message: Model configuration accepted
+    reason: ModelConfigReconciled
+    status: "True"
+    type: Accepted
+  observedGeneration: 1
+  secretHash: 89b37991ea19a28dc680806266681a277b793c3028c08142c65f9b579a2d4b6d

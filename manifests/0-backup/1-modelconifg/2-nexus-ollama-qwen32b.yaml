@@ -1,0 +1,26 @@
+apiVersion: kagent.dev/v1alpha2
+kind: ModelConfig
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"kagent.dev/v1alpha2","kind":"ModelConfig","metadata":{"annotations":{},"name":"nexus-ollama-qwen32b","namespace":"kagent"},"spec":{"model":"qwen2.5:32b","ollama":{"host":"http://9.85.229.23:31434"},"provider":"Ollama"}}
+  creationTimestamp: "2026-06-27T20:07:51Z"
+  generation: 1
+  name: nexus-ollama-qwen32b
+  namespace: kagent
+  resourceVersion: "21586985"
+  uid: 17dd1a58-bbd9-4ef6-8d10-9a05585ae6cd
+spec:
+  model: qwen2.5:32b
+  ollama:
+    host: http://9.85.229.23:31434
+  provider: Ollama
+status:
+  conditions:
+  - lastTransitionTime: "2026-06-27T20:07:51Z"
+    message: Model configuration accepted
+    reason: ModelConfigReconciled
+    status: "True"
+    type: Accepted
+  observedGeneration: 1
+  secretHash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

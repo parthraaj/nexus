@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nexus-node-mcp-server
+  namespace: nexus-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nexus-node-mcp-server-role
+  namespace: nexus-system
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nexus-node-mcp-server-binding
+  namespace: nexus-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nexus-node-mcp-server-role
+subjects:
+- kind: ServiceAccount
+  name: nexus-node-mcp-server
+  namespace: nexus-system

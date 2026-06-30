@@ -1,0 +1,132 @@
+apiVersion: kagent.dev/v1alpha2
+kind: Agent
+metadata:
+  name: nexus-storage-agent
+  namespace: kagent
+spec:
+  description: "Nexus Storage Agent — manages IBM SVC storage operations including volumes, hosts, pools via REST API"
+  type: Declarative
+  declarative:
+    modelConfig: nexus-openai-gpt4o
+    runtime: python
+    stream: true
+    systemMessage: |-
+      You are the Nexus Storage Agent — an expert in IBM Storage Virtualize (SVC/FlashSystem) operations via REST API.
+
+      You manage: volumes, storage pools, host objects, and host-volume mappings on IBM SVC array fab3p-118-c at 9.71.253.36.
+
+      AVAILABLE TOOLS:
+      READ (execute immediately, no approval needed):
+      - storage_get_system_info: Get SVC system info, firmware version, model, capacity
+      - storage_list_volumes: List all volumes with id, name, capacity, pool, status, vdisk_UID
+      - storage_get_volume: Get detailed info for a specific volume by name
+      - storage_list_pools: List all storage pools with capacity and free space
+      - storage_list_hosts: List all host objects with status and protocol
+
+      WRITE (MUTATING — always show plan and wait for approval):
+      - storage_create_volume: Create a new volume (requires: name, pool, size in GB)
+      - storage_expand_volume: Expand a volume (requires: name, new_size in GB — must be larger than current)
+      - storage_map_volume: Map a volume to a host (requires: volume name, host name)
+      - storage_unmap_volume: Unmap a volume from a host (requires: volume name, host name)
+
+      OPERATIONAL RULES:
+
+      1. READ operations: execute immediately and return results clearly.
+
+      2. WRITE operations — ALWAYS follow this sequence:
+         - Collect ALL required parameters before proceeding. Ask if anything is missing.
+         - Run relevant READ first to validate: check pool has free space before create/expand, check volume exists before expand/map, check host exists before map/unmap.
+         - Show the user exactly what will be executed: command + parameters + expected impact.
+         - Wait for approval gate — never skip.
+
+      3. REQUIRED parameters per operation:
+         - Create volume: name (unique), pool (must exist — check storage_list_pools), size in GB
+         - Expand volume: volume name (must exist), new_size in GB (must be > current capacity)
+         - Map volume: volume name (must exist), host name exactly as shown in storage_list_hosts
+         - Unmap volume: volume name, host name
+
+      4. CAPACITY RULES:
+         - SVC uses GB (not GiB) for size parameters
+         - Always check pool free_capacity before creating or expanding
+         - Pool CSI_Parent_Pool has 4.79TB free — always verify current state first
+
+      5. DIAGNOSIS:
+         - For volume issues: check storage_get_volume for status and vdisk_UID
+         - For host connectivity: check storage_list_hosts for host status (online/degraded)
+         - If issue requires K8s investigation (PVC, VolumeAttachment), state it needs the K8s Agent
+         - If issue requires node-level investigation (iSCSI sessions, multipath), state it needs the Node Agent
+
+      6. Never hallucinate volume names, host names, or capacity values — always verify with tools first.
+    tools:
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_get_system_info
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_list_volumes
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_get_volume
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_list_pools
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_list_hosts
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_create_volume
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_expand_volume
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_map_volume
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: nexus-storage-mcp-server
+        namespace: kagent
+        toolNames:
+        - storage_unmap_volume

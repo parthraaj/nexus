@@ -1,0 +1,68 @@
+apiVersion: kagent.dev/v1alpha2
+kind: RemoteMCPServer
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"kagent.dev/v1alpha2","kind":"RemoteMCPServer","metadata":{"annotations":{},"name":"nexus-storage-mcp-server","namespace":"kagent"},"spec":{"description":"Nexus Storage MCP Server: IBM SVC REST API operations including volume, host, pool management","protocol":"STREAMABLE_HTTP","sseReadTimeout":"5m0s","terminateOnClose":true,"timeout":"30s","url":"http://nexus-storage-mcp-server.nexus-system.svc.cluster.local:8080/mcp"}}
+  creationTimestamp: "2026-06-27T19:12:35Z"
+  generation: 1
+  name: nexus-storage-mcp-server
+  namespace: kagent
+  resourceVersion: "22557002"
+  uid: 50871756-c2a3-43f9-8b85-522be06c0d4e
+spec:
+  description: 'Nexus Storage MCP Server: IBM SVC REST API operations including volume,
+    host, pool management'
+  protocol: STREAMABLE_HTTP
+  sseReadTimeout: 5m0s
+  terminateOnClose: true
+  timeout: 30s
+  url: http://nexus-storage-mcp-server.nexus-system.svc.cluster.local:8080/mcp
+status:
+  conditions:
+  - lastTransitionTime: "2026-06-27T19:12:35Z"
+    message: Remote MCP server configuration accepted
+    observedGeneration: 1
+    reason: Reconciled
+    status: "True"
+    type: Accepted
+  discoveredTools:
+  - description: |-
+      Create a logical host object on IBM SVC. MUTATING — requires approval.
+
+      REQUIRED: name, and exactly ONE of: iscsiname, fcwwpn, saswwpn, nqn, fdminame (mutually exclusive — do not combine).
+
+      PROTOCOL RULES:
+      - iscsi protocol requires iscsiname
+      - fcscsi protocol requires fcwwpn (or fdminame for FDMI discovery)
+      - sas protocol requires saswwpn
+      - fcnvme/rdmanvme/tcpnvme protocols require nqn (NVMe hosts cannot mix with other port types)
+      - Dual-protocol hosts are NOT supported
+
+      OPTIONAL: iogrp, type, site, hostcluster, ownershipgroup, portset, partition, location, autostoragediscovery, forceautozone, force
+    name: storage_create_host
+  - description: Create a new volume on IBM SVC. MUTATING — requires approval. Size
+      unit is GB.
+    name: storage_create_volume
+  - description: Expand an existing volume capacity on IBM SVC. MUTATING — requires
+      approval. New size must be larger than current. Size unit is GB.
+    name: storage_expand_volume
+  - description: Get IBM SVC system information including name, firmware version,
+      model, and total capacity.
+    name: storage_get_system_info
+  - description: Get detailed information about a specific volume by name. Returns
+      full volume detail including capacity, vdisk_UID, pool, status.
+    name: storage_get_volume
+  - description: List all host objects on IBM SVC. Returns id, name, status, protocol,
+      port_count.
+    name: storage_list_hosts
+  - description: List all storage pools (mdisk groups) on IBM SVC. Returns name, status,
+      capacity, free_capacity.
+    name: storage_list_pools
+  - description: List all volumes on IBM SVC. Returns id, name, capacity, pool, status,
+      vdisk_UID.
+    name: storage_list_volumes
+  - description: Map a volume to a host on IBM SVC. MUTATING — requires approval.
+      Creates a host-volume mapping so the host can access the volume.
+    name: storage_map_volume
+  observedGeneration: 1

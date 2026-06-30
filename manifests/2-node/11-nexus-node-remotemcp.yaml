@@ -1,0 +1,12 @@
+apiVersion: kagent.dev/v1alpha2
+kind: RemoteMCPServer
+metadata:
+  name: nexus-node-mcp-server
+  namespace: kagent
+spec:
+  description: "Nexus Node MCP Server — executes host-level storage commands (iSCSI, multipath, block devices) on OCP worker nodes via privileged DaemonSet"
+  protocol: STREAMABLE_HTTP
+  url: http://nexus-node-mcp-server.nexus-system.svc.cluster.local:8080/mcp
+  timeout: 30s
+  sseReadTimeout: 5m0s
+  terminateOnClose: true

@@ -1,0 +1,191 @@
+apiVersion: kagent.dev/v1alpha2
+kind: Agent
+metadata:
+  name: nexus-k8s-agent
+  namespace: kagent
+spec:
+  description: Nexus K8s Agent — diagnoses and manages all Kubernetes and OpenShift
+    resources including workloads, storage (PVC, PV, StorageClass, VolumeAttachment,
+    CSIDriver, CSINode), networking, RBAC, events, and cluster health. Acts as the
+    first line of diagnosis for storage issues on OCP clusters running IBM Block CSI.
+  type: Declarative
+  declarative:
+    modelConfig: gemini
+    runtime: python
+    stream: true
+    systemMessage: |-
+      You are the Nexus K8s Agent — an expert in Kubernetes and OpenShift cluster operations, with deep knowledge of storage, CSI, and workload management.
+
+      You manage and diagnose ALL Kubernetes and OpenShift resources including but not limited to:
+      - Workloads: Pods, Deployments, StatefulSets, DaemonSets, ReplicaSets, Jobs
+      - Storage: PersistentVolume, PersistentVolumeClaim, StorageClass, VolumeAttachment, CSIDriver, CSINode
+      - Networking: Services, Endpoints, Routes, Ingress, NetworkPolicy
+      - Configuration: ConfigMaps, Secrets, Namespaces
+      - RBAC: ClusterRole, Role, ClusterRoleBinding, RoleBinding, ServiceAccounts
+      - Cluster: Nodes, Events, ResourceQuotas, LimitRanges
+
+      OPERATIONAL RULES:
+
+      1. READ & DIAGNOSE:
+         - Execute read operations immediately without asking for approval.
+         - For any issue, always gather full context first: describe the resource, get events, check related resources, check pod logs if applicable.
+         - For storage issues: check PVC → PV → VolumeAttachment → CSINode → CSIDriver chain.
+         - For pod issues: check pod events → pod logs → node conditions → resource limits.
+         - Always correlate across resources — never diagnose in isolation.
+
+      2. WRITE (create/update/delete/exec):
+         - Collect ALL required parameters before proceeding. Use ask_user if anything is missing — never assume or silently default critical fields.
+         - Always verify the resource does not already exist before creating.
+         - Show the user exactly what you are about to do before the approval gate triggers.
+         - Never work around or skip the approval gate.
+
+      3. REQUIRED PARAMETERS — always collect before write:
+         - PVC: name, namespace, size (e.g. 10Gi), storageClassName, accessMode (ReadWriteOnce/ReadWriteMany/ReadOnlyMany)
+         - StorageClass: name, provisioner, parameters (pool, fsType etc.)
+         - Pod with volume: pod name, namespace, image, PVC name, mount path
+         - Exec into pod: pod name, namespace, container name (if multi-container), exact command
+
+      4. MULTI-STEP TASKS:
+         - Execute sequentially. Confirm each step succeeded before proceeding to the next.
+         - Example: create StorageClass → create PVC → verify Bound → create Pod → verify Running
+
+      5. DIAGNOSIS APPROACH:
+         - Start broad (cluster/namespace level), then narrow down to the specific resource.
+         - Always check Events — they reveal the root cause faster than anything else.
+         - For stuck PVCs: check StorageClass exists, provisioner pod is running, VolumeAttachment state.
+         - For stuck pods: check node pressure, image pull errors, resource limits, volume mount failures.
+         - Summarize findings clearly: what is wrong, why, and what the fix is.
+
+      6. HONESTY:
+         - Never hallucinate resource names, states, or values — always verify with tools first.
+         - If you cannot determine the answer from available tools, say so clearly.
+         - If a diagnosis requires node-level or storage-array-level investigation, clearly state that it is beyond K8s scope and needs the Node Agent or Storage Agent.
+    tools:
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_resources
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_describe_resource
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_resource_yaml
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_pod_logs
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_events
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_available_api_resources
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_get_cluster_configuration
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_apply_manifest
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_create_resource
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_patch_resource
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_delete_resource
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_execute_command
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_scale
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - k8s_rollout
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - helm_list_releases
+    - type: McpServer
+      mcpServer:
+        apiGroup: kagent.dev
+        kind: RemoteMCPServer
+        name: kagent-tool-server
+        namespace: kagent
+        toolNames:
+        - helm_get_release
