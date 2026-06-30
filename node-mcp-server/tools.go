@@ -29,6 +29,25 @@ func registerTools(s *server.MCPServer) {
 		},
 	)
 
+	// ── READ: node's own iSCSI initiator IQN ────────────────────────────
+	s.AddTool(
+		mcp.NewTool("node_get_iscsi_initiator_name",
+			mcp.WithDescription("Get the node's own iSCSI initiator IQN from /etc/iscsi/initiatorname.iscsi. This is the IQN that identifies THIS node to a storage array. Use THIS tool (not node_get_iscsi_sessions, which returns the storage array's target IQNs) when you need the node's identity to create a host object on IBM SVC."),
+			mcp.WithString("node", mcp.Required(), mcp.Description("Full node name, e.g. ramen-ocp-3-1.xiv.ibm.com")),
+		),
+		func(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+			node, err := req.RequireString("node")
+			if err != nil {
+				return mcp.NewToolResultError("node parameter is required"), nil
+			}
+			out, err := callDaemon(ctx, node, "iscsi_initiator_name", nil)
+			if err != nil {
+				return mcp.NewToolResultError(fmt.Sprintf("failed: %v", err)), nil
+			}
+			return mcp.NewToolResultText(out), nil
+		},
+	)
+
 	// ── READ: multipath topology ──────────────────────────────────────
 	s.AddTool(
 		mcp.NewTool("node_get_multipath",

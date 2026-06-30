@@ -15,9 +15,9 @@ import (
 // svcClient is the IBM SVC REST API client.
 // All SVC REST calls are POST-only.
 type svcClient struct {
-	host    string
-	tokens  *tokenManager
-	http    *http.Client
+	host   string
+	tokens *tokenManager
+	http   *http.Client
 }
 
 var svc *svcClient

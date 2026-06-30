@@ -13,6 +13,12 @@ type Command struct {
 // Any command name NOT in this map is rejected with an error — no exceptions.
 var Allowlist = map[string]Command{
 
+	// READ — node's own iSCSI initiator IQN (identifies this node to a storage array)
+	"iscsi_initiator_name": {
+		Binary: "nsenter",
+		Args:   []string{"--mount=/proc/1/ns/mnt", "--", "cat", "/etc/iscsi/initiatorname.iscsi"},
+	},
+
 	// READ — iSCSI sessions currently active on the host
 	"iscsi_sessions": {
 		Binary: "nsenter",
